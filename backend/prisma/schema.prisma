@@ -10,6 +10,8 @@ enum TipoDesastre {
   INCENDIO
   INUNDACION
   DESLIZAMIENTO
+  HELADA
+  SEQUIA
   OTRO
 }
 
@@ -33,23 +35,90 @@ enum EstadoDonacion {
   ENTREGADA
 }
 
+enum RolUsuario {
+  ADMIN
+  PUBLICADOR
+  GENERAL
+  VOLUNTARIO
+}
+
+enum TipoOrganizacion {
+  ASOCIACION
+  EMPRESA
+  BRIGADA
+  ONG
+}
+
+enum EstadoAlerta {
+  ACTIVA
+  RESUELTA
+  DESCARTADA
+}
+
+enum EstadoDistribucion {
+  PENDIENTE
+  ENVIADA
+  ENTREGADA
+}
+
+model Organizacion {
+  id             String           @id @default(cuid())
+  nombre         String           @unique
+  tipo           TipoOrganizacion
+  departamento   String
+  telefono       String?
+  qrImagenUrl    String?          @map("qr_imagen_url")
+  verificada     Boolean          @default(false)
+  usuarios       Usuario[]
+  distribuciones DistribucionQr[]
+  creadoEn       DateTime         @default(now()) @map("creado_en")
+  actualizadoEn  DateTime         @updatedAt @map("actualizado_en")
+
+  @@index([departamento, verificada])
+  @@map("organizaciones")
+}
+
+model Usuario {
+  id             String        @id @default(cuid())
+  username       String        @unique
+  email          String        @unique
+  passwordHash   String        @map("password_hash")
+  nombreCompleto String?       @map("nombre_completo")
+  rol            RolUsuario    @default(GENERAL)
+  activo         Boolean       @default(true)
+  organizacionId String?       @map("organizacion_id")
+  organizacion   Organizacion? @relation(fields: [organizacionId], references: [id], onDelete: SetNull)
+  reportes       Reporte[]
+  donaciones     Donacion[]
+  noticias       Noticia[]
+  creadoEn       DateTime      @default(now()) @map("creado_en")
+  actualizadoEn  DateTime      @updatedAt @map("actualizado_en")
+
+  @@index([rol])
+  @@index([organizacionId])
+  @@map("usuarios")
+}
+
 model Zona {
-  id              String       @id @default(cuid())
+  id              String           @id @default(cuid())
   titulo          String
-  departamento    String       @default("Santa Cruz")
+  departamento    String           @default("Santa Cruz")
   tipo            TipoDesastre
   latitud         Float
   longitud        Float
-  estado          EstadoZona   @default(POR_VERIFICAR)
-  severidad       Int          @default(1)
-  metaBs          Float        @default(0) @map("meta_bs")
-  recaudadoBs     Float        @default(0) @map("recaudado_bs")
-  qrImagenUrl     String?      @map("qr_imagen_url")
-  necesidadesJson Json         @default("{}") @map("necesidades_json")
+  estado          EstadoZona       @default(POR_VERIFICAR)
+  severidad       Int              @default(1)
+  metaBs          Float            @default(0) @map("meta_bs")
+  recaudadoBs     Float            @default(0) @map("recaudado_bs")
+  qrImagenUrl     String?          @map("qr_imagen_url")
+  necesidadesJson Json             @default("{}") @map("necesidades_json")
   reportes        Reporte[]
   donaciones      Donacion[]
-  creadoEn        DateTime     @default(now()) @map("creado_en")
-  actualizadoEn   DateTime     @updatedAt @map("actualizado_en")
+  alertas         Alerta[]
+  noticias        Noticia[]
+  distribuciones  DistribucionQr[]
+  creadoEn        DateTime         @default(now()) @map("creado_en")
+  actualizadoEn   DateTime         @updatedAt @map("actualizado_en")
 
   @@index([tipo, estado])
   @@index([latitud, longitud])
@@ -60,6 +129,8 @@ model Reporte {
   id            String       @id @default(cuid())
   zonaId        String?      @map("zona_id")
   zona          Zona?        @relation(fields: [zonaId], references: [id], onDelete: SetNull)
+  usuarioId     String?      @map("usuario_id")
+  usuario       Usuario?     @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
   tipo          TipoDesastre
   descripcion   String
   latitud       Float
@@ -69,6 +140,7 @@ model Reporte {
   creadoEn      DateTime     @default(now()) @map("creado_en")
 
   @@index([zonaId])
+  @@index([usuarioId])
   @@index([creadoEn])
   @@map("reportes")
 }
@@ -77,6 +149,8 @@ model Donacion {
   id                  String         @id @default(cuid())
   zonaId              String         @map("zona_id")
   zona                Zona           @relation(fields: [zonaId], references: [id], onDelete: Cascade)
+  usuarioId           String?        @map("usuario_id")
+  usuario             Usuario?       @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
   nombreDonante       String         @map("nombre_donante")
   tipo                TipoDonacion
   montoBs             Float?         @map("monto_bs")
@@ -89,5 +163,72 @@ model Donacion {
   actualizadoEn       DateTime       @updatedAt @map("actualizado_en")
 
   @@index([zonaId, estado])
+  @@index([usuarioId])
+  @@index([nombreDonante])
   @@map("donaciones")
+}
+
+model Alerta {
+  id             String       @id @default(cuid())
+  zonaId         String?      @map("zona_id")
+  zona           Zona?        @relation(fields: [zonaId], references: [id], onDelete: SetNull)
+  departamento   String
+  tipo           TipoDesastre
+  titulo         String
+  descripcion    String
+  latitud        Float
+  longitud       Float
+  valorHistorico Float        @map("valor_historico")
+  valorActual    Float        @map("valor_actual")
+  unidadMedida   String       @map("unidad_medida")
+  fuenteApi      String       @map("fuente_api")
+  estado         EstadoAlerta @default(ACTIVA)
+  noticias       Noticia[]
+  creadoEn       DateTime     @default(now()) @map("creado_en")
+  actualizadoEn  DateTime     @updatedAt @map("actualizado_en")
+
+  @@index([estado, tipo])
+  @@index([departamento])
+  @@map("alertas")
+}
+
+model Noticia {
+  id           String   @id @default(cuid())
+  alertaId     String?  @map("alerta_id")
+  alerta       Alerta?  @relation(fields: [alertaId], references: [id], onDelete: SetNull)
+  zonaId       String?  @map("zona_id")
+  zona         Zona?    @relation(fields: [zonaId], references: [id], onDelete: SetNull)
+  autorId      String?  @map("autor_id")
+  autor        Usuario? @relation(fields: [autorId], references: [id], onDelete: SetNull)
+  titulo       String
+  resumen      String
+  contenido    String
+  imagenUrl    String?  @map("imagen_url")
+  esAutomatica Boolean  @default(false) @map("es_automatica")
+  creadoEn     DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@index([esAutomatica, creadoEn])
+  @@index([zonaId])
+  @@map("noticias")
+}
+
+model DistribucionQr {
+  id             String             @id @default(cuid())
+  zonaId         String             @map("zona_id")
+  zona           Zona               @relation(fields: [zonaId], references: [id], onDelete: Cascade)
+  organizacionId String             @map("organizacion_id")
+  organizacion   Organizacion       @relation(fields: [organizacionId], references: [id], onDelete: Restrict)
+  montoBs        Float              @map("monto_bs")
+  qrDestinoUrl   String             @map("qr_destino_url")
+  comprobanteUrl String?            @map("comprobante_url")
+  evidenciaUrl   String?            @map("evidencia_url")
+  observacion    String?
+  estado         EstadoDistribucion @default(PENDIENTE)
+  creadoEn       DateTime           @default(now()) @map("creado_en")
+  actualizadoEn  DateTime           @updatedAt @map("actualizado_en")
+
+  @@index([zonaId, estado])
+  @@index([organizacionId])
+  @@map("distribuciones_qr")
 }
