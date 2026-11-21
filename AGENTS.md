@@ -41,13 +41,22 @@ Guía compartida para agentes IA y desarrolladores del equipo de **AyniRadar**.
 
 ## 4. Skills y Agentes incluidos en este repositorio
 
-Todos los compañeros cuentan con **21 skills** y el agente evaluador versionados directamente en el repo:
+Todos los compañeros cuentan con **21 skills** y **8 agentes especialistas** versionados directamente en el repo (`.agents/agents/`):
 
-### Diseño y UI/UX (`.agents/skills/` y `.agents/agents/`)
+### Agentes Especialistas (`.agents/agents/`)
+- `design-system-evaluator.md` — Audita la UI en 3 lentes (`frontend-design` + `ui-ux-pro-max` + `impeccable`) con scorecard `/10` y hallazgos `P0/P1/P2`.
+- `architect.md` — Custodia la Arquitectura Hexagonal en NestJS y Feature-Based en React bajo el estándar híbrido obligatorio.
+- `database-reviewer.md` — Persistencia en Prisma 7, PostgreSQL/Supabase, clustering Haversine y optimización de índices/seeds.
+- `react-reviewer.md` — React 19, ciclo de vida de MapLibre GL, selectores Zustand y rendimiento de capas WebGL.
+- `security-reviewer.md` — DTOs con `ValidationPipe`, CORS, higiene de secretos y verificación de flujo no custodial.
+- `tdd-guide.md` — Pruebas AAA en español con Vitest y React Testing Library (cobertura ≥ 80%).
+- `build-error-resolver.md` — Resolución quirúrgica de errores de build y chequeo de tipos TypeScript/NestJS/Vite.
+- `browser-qa-runner.md` — Pruebas visuales/E2E con Playwright y Chrome DevTools para la demo de 4 minutos.
+
+### Diseño y UI/UX (`.agents/skills/`)
 - `frontend-design` — Dirección estética intencional, tipografía y anti-AI-slop.
 - `ui-ux-pro-max` — Reglas UX/UI prioridades 1–10 (WCAG, touch, responsive, tokens) + base de datos de diseño.
 - `impeccable` — Playbooks de auditoría, crítica y pulido a producción (`reference/`).
-- `.agents/agents/design-system-evaluator.md` — Agente especialista que audita la UI en 3 lentes (`frontend-design` + `ui-ux-pro-max` + `impeccable`) con scorecard `/10` y hallazgos `P0/P1/P2`.
 
 ### Frontend React, QA y Accesibilidad (`.agents/skills/`)
 - `react-best-practices` · `react-review` · `react-test` · `react-build`
