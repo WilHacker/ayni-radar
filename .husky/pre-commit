@@ -1,0 +1,1 @@
+npm --prefix frontend run format:check && npm --prefix backend run format:check

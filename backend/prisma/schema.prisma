@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DisasterType {
+  INCENDIO
+  INUNDACION
+  DESLIZAMIENTO
+  OTRO
+}
+
+enum ZoneStatus {
+  POR_VERIFICAR
+  ACTIVA
+  ATENDIDA
+}
+
+enum DonationType {
+  DINERO
+  ROPA
+  AGUA
+  ALIMENTOS
+  MEDICINA
+}
+
+enum DonationStatus {
+  COMPROMETIDA
+  VERIFICADA
+  ENTREGADA
+}
+
+model Zone {
+  id          String       @id @default(cuid())
+  title       String
+  department  String       @default("Santa Cruz")
+  type        DisasterType
+  lat         Float
+  lng         Float
+  status      ZoneStatus   @default(POR_VERIFICAR)
+  severity    Int          @default(1)
+  targetBs    Float        @default(0)
+  raisedBs    Float        @default(0)
+  qrImageUrl  String?
+  needsJson   Json         @default("{}")
+  reports     Report[]
+  donations   Donation[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([type, status])
+  @@index([lat, lng])
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  zoneId      String?
+  zone        Zone?        @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  type        DisasterType
+  description String
+  lat         Float
+  lng         Float
+  photoUrl    String?
+  reporterTag String?
+  createdAt   DateTime     @default(now())
+
+  @@index([zoneId])
+  @@index([createdAt])
+}
+
+model Donation {
+  id          String         @id @default(cuid())
+  zoneId      String
+  zone        Zone           @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  donorName   String
+  type        DonationType
+  amountBs    Float?
+  quantity    Int?
+  itemDetail  String?
+  receiptUrl  String?
+  deliveryUrl String?
+  status      DonationStatus @default(COMPROMETIDA)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([zoneId, status])
+}

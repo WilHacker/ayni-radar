@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ayni-radar-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ayni}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ayni_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-ayni_radar}
+    ports:
+      - '5432:5432'
+    volumes:
+      - ayni_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-ayni} -d ${POSTGRES_DB:-ayni_radar}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ayni-radar-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      CORS_ORIGIN: http://localhost:8080,http://localhost:5173
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-postgresql://ayni:ayni_secret@db:5432/ayni_radar}
+      DIRECT_URL: ${DOCKER_DIRECT_URL:-postgresql://ayni:ayni_secret@db:5432/ayni_radar}
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3000/api
+    container_name: ayni-radar-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '8080:80'
+
+volumes:
+  ayni_pgdata:
