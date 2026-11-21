@@ -28,3 +28,7 @@ Thumbs.db
 # Prisma generated / local db
 *.db
 *.db-journal
+
+# Local AI agents & skills (each teammate installs/updates locally)
+.agents/
+backend/.agents/
