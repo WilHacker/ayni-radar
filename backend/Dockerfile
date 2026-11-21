@@ -28,4 +28,4 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss=false && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma db push || echo 'Aviso: omitiendo prisma db push en arranque'; exec node dist/main.js"]

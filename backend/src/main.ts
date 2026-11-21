@@ -8,9 +8,17 @@ import { DominioExceptionFilter } from './shared/infrastructure/http/dominio-exc
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
+  const origenesPermitidos = (process.env.CORS_ORIGIN ?? '')
+    .split(',')
+    .map((origen) => origen.trim())
+    .filter(Boolean);
+
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:5173'],
+    origin:
+      origenesPermitidos.length > 0
+        ? origenesPermitidos
+        : ['http://localhost:5173', 'https://ayni-radar.up.railway.app'],
     credentials: true,
   });
 
