@@ -11,9 +11,10 @@ ENV VITE_API_URL=$VITE_API_URL
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve SPA with Nginx
+# Stage 2: Serve SPA with Nginx (supports Railway dynamic $PORT)
 FROM nginx:1.27-alpine AS runner
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV PORT=80
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
