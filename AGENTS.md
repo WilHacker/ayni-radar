@@ -40,13 +40,30 @@ Guía compartida para agentes IA y desarrolladores del equipo de **AyniRadar**.
 
 ## 4. Skills y Agentes incluidos en este repositorio
 
-Todos los compañeros cuentan con las mismas skills y agentes versionados en el repo:
+Todos los compañeros cuentan con **21 skills** y el agente evaluador versionados directamente en el repo:
 
-### Diseño y UI/UX (raíz `.agents/`)
-- `.agents/skills/frontend-design/SKILL.md` — Dirección estética intencional, tipografía y anti-AI-slop.
-- `.agents/skills/ui-ux-pro-max/SKILL.md` — Reglas UX/UI prioridades 1–10 (WCAG, touch, responsive, tokens) + base de datos de diseño.
-- `.agents/skills/impeccable/SKILL.md` — Playbooks de auditoría, crítica y pulido a producción (`reference/`).
+### Diseño y UI/UX (`.agents/skills/` y `.agents/agents/`)
+- `frontend-design` — Dirección estética intencional, tipografía y anti-AI-slop.
+- `ui-ux-pro-max` — Reglas UX/UI prioridades 1–10 (WCAG, touch, responsive, tokens) + base de datos de diseño.
+- `impeccable` — Playbooks de auditoría, crítica y pulido a producción (`reference/`).
 - `.agents/agents/design-system-evaluator.md` — Agente especialista que audita la UI en 3 lentes (`frontend-design` + `ui-ux-pro-max` + `impeccable`) con scorecard `/10` y hallazgos `P0/P1/P2`.
+
+### Frontend React, QA y Accesibilidad (`.agents/skills/`)
+- `react-best-practices` · `react-review` · `react-test` · `react-build`
+- `a11y-debugging` · `e2e-testing` · `browser-qa`
+
+### Calidad, Base de Datos (Supabase) e IA (`.agents/skills/`)
+- `tdd-workflow` · `verification-loop`
+- `supabase` · `supabase-postgres-best-practices`
+- `gemini-api-dev`
 
 ### Backend NestJS (`backend/.agents/skills/` y `backend/AGENTS.md`)
 - `nestjs` · `nestjs-feature` · `nestjs-data` · `nestjs-auth` · `nestjs-testing` · `nestjs-production`
+
+## 5. MCPs recomendados para el proyecto
+
+- **`playwright`:** pruebas visuales/E2E contra `localhost:5173` y Railway, más screenshots para `README.md` y el pitch.
+- **`chrome-devtools`:** depuración de red/CORS, consola, rendimiento WebGL del mapa y auditoría `a11y`.
+- **`postman` / `apidog`:** colección automática desde Swagger `/docs` para probar `/api/zones`, `/api/reports` y `/api/donations`.
+- **`figma`:** extracción de diseños/tokens si el equipo diseña pantallas en Figma.
+- **`canva`:** armado y exportación de diapositivas del pitch de 4 minutos.
