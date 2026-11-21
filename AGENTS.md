@@ -7,6 +7,7 @@ Guía compartida para agentes IA y desarrolladores del equipo de **AyniRadar**.
 - **Nombre:** AyniRadar (ABSTRACTHON 2026 — Bolivia · Track 04: Ayuda Tecnológica, cruce Comunicación + Finanzas).
 - **Propósito:** Mapa de calor WebGL de zonas de desastre por agrupación geográfica de puntos (*clustering Haversine `< 1.5 km`*, validación automática `≥ 3` reportes → `ACTIVA`) conectado a un sistema de donaciones directas no custodiales (dinero vía QR directo + ropa/insumos con trazabilidad pública y foto de entrega).
 - **Documentación del MVP:** ver `docs/Analisis-AyniRadar.md`.
+- **Estándares de codificación obligatorios:** ver `docs/CODING_STANDARDS.md` (**estándar híbrido obligatorio**: dominio en español en BD/archivos/rutas como `zonas`, `reportes`, `donaciones`, `mapa` + estructura técnica en inglés; errores de dominio en español; tests AAA en español).
 
 ## 2. Arquitectura Obligatoria
 
@@ -20,7 +21,7 @@ Guía compartida para agentes IA y desarrolladores del equipo de **AyniRadar**.
 - **Frontend (`frontend/src/`):** **Arquitectura Feature-Based con subcarpetas** (`React 19 + Vite 8 + Tailwind CSS v4 + TypeScript 6 estricto + React Router + TanStack Query + Axios + Zod + Zustand + MapLibre GL`).
   - `app/{providers,router}/`
   - `shared/{api,components/ui,types,utils}/`
-  - `features/{map,reports,donations}/{api,components,hooks,store,types|schemas}/`
+  - `features/{mapa,reportes,donaciones}/{api,components,hooks,store,types|schemas}/`
   - `pages/`
 
 ## 3. Reglas de Calidad y Commits

@@ -6,20 +6,20 @@ datasource db {
   provider = "postgresql"
 }
 
-enum DisasterType {
+enum TipoDesastre {
   INCENDIO
   INUNDACION
   DESLIZAMIENTO
   OTRO
 }
 
-enum ZoneStatus {
+enum EstadoZona {
   POR_VERIFICAR
   ACTIVA
   ATENDIDA
 }
 
-enum DonationType {
+enum TipoDonacion {
   DINERO
   ROPA
   AGUA
@@ -27,64 +27,67 @@ enum DonationType {
   MEDICINA
 }
 
-enum DonationStatus {
+enum EstadoDonacion {
   COMPROMETIDA
   VERIFICADA
   ENTREGADA
 }
 
-model Zone {
-  id          String       @id @default(cuid())
-  title       String
-  department  String       @default("Santa Cruz")
-  type        DisasterType
-  lat         Float
-  lng         Float
-  status      ZoneStatus   @default(POR_VERIFICAR)
-  severity    Int          @default(1)
-  targetBs    Float        @default(0)
-  raisedBs    Float        @default(0)
-  qrImageUrl  String?
-  needsJson   Json         @default("{}")
-  reports     Report[]
-  donations   Donation[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+model Zona {
+  id              String       @id @default(cuid())
+  titulo          String
+  departamento    String       @default("Santa Cruz")
+  tipo            TipoDesastre
+  latitud         Float
+  longitud        Float
+  estado          EstadoZona   @default(POR_VERIFICAR)
+  severidad       Int          @default(1)
+  metaBs          Float        @default(0) @map("meta_bs")
+  recaudadoBs     Float        @default(0) @map("recaudado_bs")
+  qrImagenUrl     String?      @map("qr_imagen_url")
+  necesidadesJson Json         @default("{}") @map("necesidades_json")
+  reportes        Reporte[]
+  donaciones      Donacion[]
+  creadoEn        DateTime     @default(now()) @map("creado_en")
+  actualizadoEn   DateTime     @updatedAt @map("actualizado_en")
 
-  @@index([type, status])
-  @@index([lat, lng])
+  @@index([tipo, estado])
+  @@index([latitud, longitud])
+  @@map("zonas")
 }
 
-model Report {
-  id          String       @id @default(cuid())
-  zoneId      String?
-  zone        Zone?        @relation(fields: [zoneId], references: [id], onDelete: SetNull)
-  type        DisasterType
-  description String
-  lat         Float
-  lng         Float
-  photoUrl    String?
-  reporterTag String?
-  createdAt   DateTime     @default(now())
+model Reporte {
+  id            String       @id @default(cuid())
+  zonaId        String?      @map("zona_id")
+  zona          Zona?        @relation(fields: [zonaId], references: [id], onDelete: SetNull)
+  tipo          TipoDesastre
+  descripcion   String
+  latitud       Float
+  longitud      Float
+  fotoUrl       String?      @map("foto_url")
+  reportanteTag String?      @map("reportante_tag")
+  creadoEn      DateTime     @default(now()) @map("creado_en")
 
-  @@index([zoneId])
-  @@index([createdAt])
+  @@index([zonaId])
+  @@index([creadoEn])
+  @@map("reportes")
 }
 
-model Donation {
-  id          String         @id @default(cuid())
-  zoneId      String
-  zone        Zone           @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  donorName   String
-  type        DonationType
-  amountBs    Float?
-  quantity    Int?
-  itemDetail  String?
-  receiptUrl  String?
-  deliveryUrl String?
-  status      DonationStatus @default(COMPROMETIDA)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+model Donacion {
+  id                  String         @id @default(cuid())
+  zonaId              String         @map("zona_id")
+  zona                Zona           @relation(fields: [zonaId], references: [id], onDelete: Cascade)
+  nombreDonante       String         @map("nombre_donante")
+  tipo                TipoDonacion
+  montoBs             Float?         @map("monto_bs")
+  cantidad            Int?
+  detalleInsumo       String?        @map("detalle_insumo")
+  comprobanteUrl      String?        @map("comprobante_url")
+  evidenciaEntregaUrl String?        @map("evidencia_entrega_url")
+  estado              EstadoDonacion @default(COMPROMETIDA)
+  creadoEn            DateTime       @default(now()) @map("creado_en")
+  actualizadoEn       DateTime       @updatedAt @map("actualizado_en")
 
-  @@index([zoneId, status])
+  @@index([zonaId, estado])
+  @@map("donaciones")
 }
