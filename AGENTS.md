@@ -25,6 +25,7 @@ Guía compartida para agentes IA y desarrolladores del equipo de **AyniRadar**.
 
 ## 3. Reglas de Calidad y Commits
 
+- **CONTROL MANUAL DE GIT (REGLA OBLIGATORIA):** el agente IA **NUNCA** debe ejecutar `git commit` ni `git push` automáticamente. Todos los cambios deben quedar en el working tree local para que el usuario los revise, haga el commit y los suba manualmente (el agente puede sugerir el mensaje en Conventional Commits en español si se lo piden).
 - **TypeScript estricto** (`strict: true`, `noUncheckedIndexedAccess: true`, `noImplicitReturns: true`).
 - **Nunca subir `.env` ni secretos** (usar `.env.example` con placeholders).
 - **Conventional Commits obligatorios** (validado por Husky + Commitlint): `feat(scope): ...`, `fix(scope): ...`, `refactor(scope): ...`, `test(scope): ...`, `docs: ...`, `chore: ...`, `build: ...`, `ci: ...`.
